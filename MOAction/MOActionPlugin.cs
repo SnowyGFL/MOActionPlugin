@@ -37,22 +37,16 @@ namespace MOAction
         private List<Lumina.Excel.GeneratedSheets.Action> applicableActions;
         private List<TargetType> TargetTypes;
         private List<TargetType> GroundTargetTypes;
-        private readonly string[] tTypeNames = { "UI Mouseover", "Field Mouseover", "Regular Target", "Focus Target", "Target of Target", "Myself", "<2>", "<3>", "<4>", "<5>", "<6>", "<7>", "<8>", "Mouse Cursor (Ground Target)" };
-        private List<GuiSettings> SortedStackFlags;
-        private List<GuiSettings> UnsortedStackFlags;
         private List<MoActionStack> NewStacks;
         private Dictionary<string, HashSet<MoActionStack>> SavedStacks;
-        //List<Lumina.Excel.GeneratedSheets.Action> actions;
     
         private bool firstTimeUpgrade = false;
         private bool rangeCheck;
         private bool mouseClamp;
         private bool otherGroundClamp;
 
-       // private readonly string[] soloJobNames = { "AST", "WHM", "SCH", "SMN", "BLM", "RDM", "BLU", "BRD", "MCH", "DNC", "DRK", "GNB", "WAR", "PLD", "DRG", "MNK", "SAM", "NIN" };
         private readonly Lumina.Excel.GeneratedSheets.ClassJob[] Jobs;
         private readonly List<Lumina.Excel.GeneratedSheets.ClassJob> JobAbbreviations; 
-        private readonly string[] roleActionNames = { "BLM SMN RDM BLU", "BRD MCH DNC",  "MNK DRG NIN SAM", "PLD WAR DRK GNB", "WHM SCH AST"};
         private readonly uint[] GroundTargets = { 3569, 3639, 188, 7439, 2262 };
 
         private Dictionary<string, List<Lumina.Excel.GeneratedSheets.Action>> JobActions;
@@ -68,8 +62,6 @@ namespace MOAction
         private SigScanner SigScanner;
         private KeyState KeyState;
         //private FFXIVClientStructs.Attributes.Addon addon;
-
-        private bool testo; 
 
         unsafe public MOActionPlugin(DalamudPluginInterface pluginInterface,  CommandManager commands,  DataManager datamanager, GameGui gamegui, KeyState keystate, ObjectTable objects, SigScanner scanner, ClientState clientstate, TargetManager targetmanager)
         {

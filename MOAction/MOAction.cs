@@ -28,8 +28,8 @@ namespace MOAction
 {
     public class MOAction
     {
-        public delegate bool OnRequestActionDetour(long param_1, uint param_2, ulong param_3, long param_4,
-                       uint param_5, uint param_6, int param_7);
+        public unsafe delegate bool OnRequestActionDetour(long param_1, uint param_2, ulong param_3, long param_4,
+                       uint param_5, uint param_6, int param_7, byte* param_8);
 
         [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Ansi)]
         private delegate ulong ResolvePlaceholderActor(long param1, string param2, byte param3, byte param4);
@@ -87,7 +87,7 @@ namespace MOAction
         private unsafe ActionManager* AM;
         private readonly int IdOffset = (int)Marshal.OffsetOf<FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject>("ObjectID");
 
-        public MOAction(SigScanner scanner, ClientState clientstate,
+        public unsafe MOAction(SigScanner scanner, ClientState clientstate,
                         DataManager datamanager, TargetManager targetmanager, ObjectTable objects, KeyState keystate, GameGui gamegui
                         )
         {
@@ -193,9 +193,9 @@ namespace MOAction
         }
 
         private unsafe bool HandleRequestAction(long param_1, uint actionType, ulong actionID, long param_4,
-                       uint param_5, uint param_6, int param_7)
+                       uint param_5, uint param_6, int param_7, byte* param_8)
         {
-            if (actionType != 1) return requestActionHook.Original(param_1, actionType, actionID, param_4, param_5, param_6, param_7);
+            if (actionType != 1) return requestActionHook.Original(param_1, actionType, actionID, param_4, param_5, param_6, param_7, param_8);
             var (action, target) = GetActionTarget((uint)actionID, actionType);
             void EnqueueGroundTarget()
             {
@@ -219,9 +219,9 @@ namespace MOAction
                 Marshal.WriteInt64(self + 120, 0);
             }
             
-            if (action == null) return requestActionHook.Original(param_1, actionType, actionID, param_4, param_5, param_6, param_7);
+            if (action == null) return requestActionHook.Original(param_1, actionType, actionID, param_4, param_5, param_6, param_7, param_8);
             if (action.Name == "Earthly Star" && clientState.LocalPlayer.StatusList.Any(x => x.StatusId == 1248 || x.StatusId == 1224))
-                return requestActionHook.Original(param_1, actionType, actionID, param_4, param_5, param_6, param_7);
+                return requestActionHook.Original(param_1, actionType, actionID, param_4, param_5, param_6, param_7, param_8);
             // Ground target "at my cursor"
             if (action != null && target == null)
             {
@@ -265,9 +265,9 @@ namespace MOAction
                     bool returnval = RALDelegate((IntPtr)param_1, actionType, action.RowId, (uint)param_4, ref targpos, 0);
                     return returnval;
                 }
-                return requestActionHook.Original(param_1, actionType, action.RowId, target.ObjectId, param_5, param_6, param_7);
+                return requestActionHook.Original(param_1, actionType, action.RowId, target.ObjectId, param_5, param_6, param_7, param_8);
             }
-            return requestActionHook.Original(param_1, actionType, actionID, param_4, param_5, param_6, param_7);
+            return requestActionHook.Original(param_1, actionType, actionID, param_4, param_5, param_6, param_7, param_8);
         }
 
         private Vector3 GetClampedGroundCoords(Vector3 self, Vector3 dest, int range)
