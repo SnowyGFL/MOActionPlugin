@@ -55,7 +55,6 @@ namespace MOAction
         private readonly GetGroupTimerDelegate getGroupTimer;
 
         public List<MoActionStack> Stacks { get; set; }
-        private DalamudPluginInterface pluginInterface;
         private IEnumerable<Lumina.Excel.GeneratedSheets.Action> RawActions;
 
         public IntPtr fieldMOLocation;
@@ -181,7 +180,7 @@ namespace MOAction
 
         private void HandleUiMoEntityId(long param1, long param2)
         {
-            //Log.Information("UI MO: {0}", param2);
+            PluginLog.Verbose("UI MO: {0}, {1}", param1, param2);
             uiMoEntityId = (IntPtr)param2;
             uiMoEntityIdHook.Original(param1, param2);
         }
@@ -195,6 +194,7 @@ namespace MOAction
         private unsafe bool HandleRequestAction(long param_1, uint actionType, ulong actionID, long param_4,
                        uint param_5, uint param_6, int param_7, byte* param_8)
         {
+            PluginLog.Verbose("HandleRequstAction: {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}", param_1, actionType, actionID, param_4, param_5, param_6, param_7);
             if (actionType != 1) return requestActionHook.Original(param_1, actionType, actionID, param_4, param_5, param_6, param_7, param_8);
             var (action, target) = GetActionTarget((uint)actionID, actionType);
             void EnqueueGroundTarget()
@@ -285,7 +285,12 @@ namespace MOAction
             var action = RawActions.FirstOrDefault(x => x.RowId == ActionID);
             if (action == default) return (null, null);
             //var action = RawActions.First(x => x.RowId == ActionID);
-            var applicableActions = Stacks.Where(entry => entry.BaseAction == action);
+            IEnumerable<MoActionStack> applicableActions = Enumerable.Empty<MoActionStack>();
+            if (ActionID == 24291) // 24291 is Eukrasian Diagnosis, somehow it gets called when you press the action early? I need an expert!!!
+                applicableActions = Stacks.Where(entry => entry.BaseAction.RowId == 24284);
+            else
+                applicableActions = Stacks.Where(entry => entry.BaseAction == action);
+
             MoActionStack stackToUse = null;
             foreach (var entry in applicableActions)
             {
