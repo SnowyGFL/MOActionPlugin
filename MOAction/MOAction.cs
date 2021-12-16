@@ -197,6 +197,7 @@ namespace MOAction
             PluginLog.Verbose("HandleRequstAction: {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}", param_1, actionType, actionID, param_4, param_5, param_6, param_7);
             if (actionType != 1) return requestActionHook.Original(param_1, actionType, actionID, param_4, param_5, param_6, param_7, param_8);
             var (action, target) = GetActionTarget((uint)actionID, actionType);
+
             void EnqueueGroundTarget()
             {
                 IntPtr self = (IntPtr)param_1;
@@ -285,11 +286,7 @@ namespace MOAction
             var action = RawActions.FirstOrDefault(x => x.RowId == ActionID);
             if (action == default) return (null, null);
             //var action = RawActions.First(x => x.RowId == ActionID);
-            IEnumerable<MoActionStack> applicableActions = Enumerable.Empty<MoActionStack>();
-            if (ActionID == 24291) // 24291 is Eukrasian Diagnosis, somehow it gets called when you press the action early? I need an expert!!!
-                applicableActions = Stacks.Where(entry => entry.BaseAction.RowId == 24284);
-            else
-                applicableActions = Stacks.Where(entry => entry.BaseAction == action);
+            var applicableActions = Stacks.Where(entry => entry.BaseAction == action);
 
             MoActionStack stackToUse = null;
             foreach (var entry in applicableActions)
@@ -342,7 +339,7 @@ namespace MOAction
         {
             if (targ.Target == null || targ.Action == null) return false;
             var y = AM->GetActionStatus((ActionType)actionType, targ.Action.RowId, targ.Target.GetTargetActorId());
-            if (AM->GetActionStatus((ActionType)actionType, AM->GetAdjustedActionId(targ.Action.RowId), targ.Target.GetTargetActorId()) != 0)
+            if (AM->GetActionStatus((ActionType)actionType, AM->GetAdjustedActionId(targ.Action.RowId), targ.Target.GetTargetActorId()) != 0 && (targ.Action.TargetArea || (y != 580 && y != 582)))
                 return false;
             var action = targ.Action;
             var action2 = AM->GetAdjustedActionId(action.RowId);

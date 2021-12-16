@@ -63,7 +63,7 @@ namespace MOAction
         private KeyState KeyState;
         //private FFXIVClientStructs.Attributes.Addon addon;
 
-        unsafe public MOActionPlugin(DalamudPluginInterface pluginInterface,  CommandManager commands,  DataManager datamanager, GameGui gamegui, KeyState keystate, ObjectTable objects, SigScanner scanner, ClientState clientstate, TargetManager targetmanager)
+        public MOActionPlugin(DalamudPluginInterface pluginInterface,  CommandManager commands,  DataManager datamanager, GameGui gamegui, KeyState keystate, ObjectTable objects, SigScanner scanner, ClientState clientstate, TargetManager targetmanager)
         {
             this.pluginInterface = pluginInterface;
 
